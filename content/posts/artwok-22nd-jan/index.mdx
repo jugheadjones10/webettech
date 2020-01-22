@@ -87,7 +87,7 @@ the docs. A shortcoming from Google’s Android team maybe?<br/><br/>
 
 One problem I consistently face is the following :
 
-```java {3, 12}
+```java {3,12}
     public boolean isEmailDuplicate(String email){
 
         Boolean isEmailDuplicate;
@@ -125,6 +125,8 @@ Anything it does to that copy is independent from the variable in the
 enclosing scope. So if the variable changes in the inner class, and
 then it is used later in the enclosing scope, the changes made independent
 the inner class did not persist in the enclosing scope.
+
+The solution? Declare an instance variable **outside** the isEmailDuplicate method.
 
 
 
