@@ -62,7 +62,7 @@ generating Android boilerplate on the go?<br/><br/>
 Discovered a great hack on Stack Overflow. I’ve always been confused about how to set the gravity inside a horizontal linear layout such that there’s one item gravitated to the extreme left and another to the extreme right. Here, ladies and gents, is the genius solution behind how:
 Gravity left, right doesn't work when the orientation of the LinearLayout is set to horizontal (as the views are placed along the X axis). One way to do what you want is to insert an empty View between the two LinearLayouts to create a space between them:
 
-```xml
+```noLineNumbers
 <View android:layout_width="0dp"
     android:layout_height="fill_parent"
     android:layout_weight="1" />
@@ -73,7 +73,9 @@ Gravity left, right doesn't work when the orientation of the LinearLayout is set
 Found a really hacky solution to the position of the indicator being left instead of on the right (in ExpandableListView). Add this to ExpandableListView:
 android:layoutDirection="rtl"
 And add this to the xml for list group items:
+
 android:gravity="left" //to adjust the text to align to the left again
+
 android:layoutDirection="ltr"  //OR this line, based on your layout
 
 Is it really possible that only Java hacks and weird xml workarounds
@@ -85,7 +87,7 @@ the docs. A shortcoming from Google’s Android team maybe?<br/><br/>
 
 One problem I consistently face is the following :
 
-```Java {3, 12}
+```java {3, 12}
     public boolean isEmailDuplicate(String email){
 
         Boolean isEmailDuplicate;
