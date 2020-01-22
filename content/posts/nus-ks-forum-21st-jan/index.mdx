@@ -1,0 +1,75 @@
+---
+title: 21st Jan - NUS Korea Society forum
+date: 2020-01-21
+tags:
+  - White Tiger Project
+---
+
+Some notes from before the start of Webettech:
+
+The NUS Korea Society forum I was tasked to develop is due in around 3 days. Successfully 
+using ReForum to finish this will attest to the glorious power of open source collaboration.
+
+Ran into OAuth. Like way too many things, I've heard of it, but don't exactly know 
+what it is and how it works. Look into it.
+
+GZip compression - a method of reducing the file size of any type of media being sent
+to and from the server for faster load times. Alligator.io explains how to use the npm
+module "compression" to enable your server to gzip responses.
+
+Cookies - about time I learn about them. Fun fact: console.log document.cookie to see
+a list of key-value pairs of cookies for that website. Use the cookie-parser npm module
+to add the cookies list to req.cookies. A cookie can store a session id to help the server
+identify the session. Actual session information is stored server-side.
+
+Use express-sessions to deal with sessions.
+
+Passport.js - bound to be useful in the future, so might as well learn it now.
+<br/><br/>
+21st Jan :
+
+After some futile wrangling with the ReForum library in order to get the backend set up, I think I've had it with trying to get an open source
+project up and running. I'm going to write my own backend, then use frontend React components from ReForum. I'll use MongoDB with Mongoose,
+applying the REST API lessons learnt by making the maps backend for Myanmar.<br/><br/>
+The below Node.js middleware is very common:
+
+```noLineNumbers
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+```
+The above middleware is used to parse the content inside the body of the POST or PUT request. From the Express documentation,
+express.json() does this :<br/><br/>
+
+>Returns middleware that only parses JSON and only looks at requests where the Content-Type header matches the type option. This parser accepts any Unicode encoding of the body and supports automatic inflation of gzip and deflate encodings.
+
+>A new body object containing the parsed data is populated on the request object after the middleware (i.e. req.body), or an empty object ({}) if there was no body to parse, the Content-Type was not matched, or an error occurred.
+
+Payloads attached to POST or PUT requests can hold different kinds of content. Some
+examples are Content-Type: application/json, application/x-www-form-urlencoded, and multipart/form-data. 
+The first type is a json object, and for the second type the payload might look like this :
+foo=bar&name=John. **The above middlewares' job is to parse these different types of data.**
+
+Unicode assigns numbers to all the characters in the world so that computers can speak
+in a common language.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
