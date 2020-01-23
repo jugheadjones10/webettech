@@ -128,6 +128,19 @@ the inner class did not persist in the enclosing scope.
 
 The solution? Declare an instance variable **outside** the isEmailDuplicate method.
 
+Update : the above method does not work. Since the instance variable is given a 
+value in an asynchronous database call, calls to the isEmailDuplicate immediately returns
+the instance variable instead of waiting for the database call to update its value.
+Only when the method is called a second time a while later is the correct value returned,
+since the database call was completed and subsequently set the value of isEmailDuplicate.
+I will need to implement a callback mechanism to get this working.<br/><br/>
+
+There's a difference between boolean and Boolean. boolean is a primitive type 
+while Boolean is an object to which multiple methods are attached.<br/><br/>
+
+What's the difference between getActivity() and getContext()?
+
+
 
 
 
