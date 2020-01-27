@@ -5,7 +5,7 @@ tags:
   - School
 ---
 CS2030S - got introduced to the concepts of static and dynamic typing. Why one
-over the other? What are the pros and cons of each?
+over the other? What are the pros and cons of each?<br/><br/>
 
 Let's address the reasons for access variables (private, public) once and for all.
 
@@ -76,11 +76,10 @@ boolean contains(Point point) {
 ```
 
 In this case, Circle is asking Point for its x and y coordinates, then doing the 
-square root calculations itself. So instead of **asking** for values and doing the 
-work yourself, classes should **tell** each other what to do in their own classes.
+square root calculations itself. Instead of **asking** for values and doing the 
+work yourself like in this exmaple, classes should **tell** each other what to do in their own classes.
 
-This brings up a crucial point. Let's say I changed the implementation of Point
-like so :
+This brings up an important point. Let's say I changed the implementation of Point :
 
 ```java
 class Point {
@@ -112,12 +111,13 @@ however it likes.
 private double[] coord;
 ```
 
-Getters are also part of the solution. As long as I write my Getters
+Getters can be used if a class wants to expose its fields without
+making them public. As long as I write my Getters
 to properly clean or transform my class fields for the outside world to access,
-dependencies on my class will not break no matter the implementation.
+dependencies on my class will not break no matter my implementation.
 
 Getters ensure that even if some classes are not following "Tell Don't Ask", 
-they won't break when implementation changes.
+they won't break when the implementation of the class they're "asking" from changes.
 
 An excerpt from Stack Overflow summarizing the point :
 >Private variables help prevent people from depending on certain parts of your code. 
@@ -134,9 +134,7 @@ a huge benefit that using private variables
 (and more broadly, encapsulation) gives you.
 
 [This](https://softwareengineering.stackexchange.com/questions/143736/why-do-we-need-private-variables)
-stack overflow thread contains other practical reasons for access modifiers.
+stack overflow thread contains other practical reasons for access modifiers.<br/><br/>
 
-
-
-
-
+Java, unlike C languages, have a garbage collector that doesn't necessitate manual
+memory management.
