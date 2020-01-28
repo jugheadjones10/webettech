@@ -5,5 +5,35 @@ tags:
   - Artwok
 ---
 
+Encountering some confusion regarding the difference between Relative Layout and
+Constraint Layout. 
+
+Classname.this is used to refer to the outermost class from an inner class.
+For example :
+
+```java
+Button button = (Button)findViewById(R.id.ticket_details_sell_ticket);
+button.setOnClickListener(new OnClickListener() {
+    @Override
+    public void onClick(View v) {
+        // it will be wrong to use only "this", because it would
+        // reference the just created OnClickListener object
+        Intent login = new Intent(ClassName.this, Login.class);
+        startActivityForResult(login, LOGIN_REQUEST);
+    }
+});
+```
+
+Still not very sure about the role of ViewModel. Sometimes seems like an
+unnecessary middleman between the view and the repository.
+
+Maybe it's the conversion from live data to usable data. The "observe" part of 
+view model allows live data to be "observed" in the view and to be used as 
+normal data.
+
+Write an overview of all the different types of data structures in Java :
+Arrays, ArrayLists, Lists, etc. The confusion is killing me.
+
+ScrollView can only have one child, usually a linear layout. 
 
 
