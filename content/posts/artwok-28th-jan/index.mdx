@@ -1,0 +1,139 @@
+---
+title: 28th Jan - Artwok
+date: 2020-01-28
+tags:
+  - Artwok
+---
+
+Insane, the kind of mistakes I make. FIRESTORE DATABASE CALLS ARE ASYNCHRONOUS.
+SUBSEQUENT CODE EXECUTES EVEN THOUGH DB CALL MIGHT NOT HAVE FINISHED.
+
+[Essential firebase tasks API explanation series](https://firebase.googleblog.com/2016/09/become-a-firebase-taskmaster-part-1.html?utm_campaign=Firebase_culture_education_general_en_09-29-16&utm_source=Firebase&utm_medium=blog)
+
+Big revelation. I had always thought my setListings or setPosts
+implementation in all my Adapters had been impeccable since I had
+copied DiffUtil code :
+
+```java
+  public void setListings(final List<Listing> listings) {
+        if (this.listingsList == null) {
+            this.listingsList = listings;
+            notifyItemRangeInserted(0, listings.size());
+        } else {
+            DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+                @Override
+                public int getOldListSize() {
+                    return ListingsAdapter.this.listingsList.size();
+                }
+
+                @Override
+                public int getNewListSize() {
+                    return listings.size();
+                }
+
+                @Override
+                public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                    return ListingsAdapter.this.listingsList.get(oldItemPosition).getPostid().equals(
+                            listings.get(newItemPosition).getPostid());
+                }
+
+                @Override
+                public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                    return ListingsAdapter.this.listingsList.get(oldItemPosition).getPostid().equals(
+                            listings.get(newItemPosition).getPostid());
+                }
+            });
+            this.listingsList = listings;
+            result.dispatchUpdatesTo(this);
+        }
+    }
+```
+
+But when an empty list was passed into setListings,
+nothing happened on screen; the recycler view items were still there.
+Does result.dispatchUpdatesTo(this) not work if the update is that the
+new listings is empty? I had to add notifyDataSetChanged() in order to 
+make the items disappear from the screen, which kind of defeats the whole
+purpose of DiffUtil. 
+
+```java     
+this.listingsList = listings;
+notifyDataSetChanged();
+result.dispatchUpdatesTo(this);
+```
+
+This causes the whole recycler view to refresh every time I favorite 
+or un-favorite a listing; there's got to be a way around this. 
+
+An even worse finding : removing one item from a populated list
+messes up the order of the recycler view items and results in
+incomprehensible behaviour.
+
+[Good explanation of Diff Util](https://therubberduckdev.wordpress.com/2017/11/09/handle-data-change-in-recyclerview-using-diffutil/)
+
+1st Feb 2020 :
+I was under the severely misguided impression that the doesItContain variable below
+would return true.
+
+```java
+public class HelloWorld
+{
+  // arguments are passed using the text field below this editor
+  public static void main(String[] args)
+  {
+    
+    List<User> users = new ArrayList<>();
+
+    User singleUser = 
+    users.add(new User("1", "234", "user"));
+    users.add(new User("2341", "efef", "sef"));
+    users.add(new User("99", "99", "9"));
+
+    Boolean doesItContain = users.contains(new User("1", "234", "user"));
+
+
+    System.out.print(doesItContain);
+  }
+}
+```
+
+Remember - once you make a new class, it is different from another class of the
+same type even if all the inside fields are the same.
+
+The remedy :
+
+```java
+public class HelloWorld
+{
+  // arguments are passed using the text field below this editor
+  public static void main(String[] args)
+  {
+    
+    
+    List<User> users = new ArrayList<>();
+
+    User singleUser = new User("1", "234", "user");
+    users.add(singleUser);
+    users.add(new User("2341", "efef", "sef"));
+    users.add(new User("99", "99", "9"));
+
+    Boolean doesItContain = users.contains(singleUser);
+
+
+    System.out.print(doesItContain);
+  }
+}
+```
+
+Easy concepts, but you clearly haven't internalized them yet.
+Update after a few hours : O God. I made the exact same mistake, except with ArrayLists.
+If I initialize two ArrayLists, even if their contents are different, == will return false.
+
+Use list1.equals(list2) instead. This will compare contents only.
+
+Write an article on how context works, please.
+
+Insane hack around the problem of the sticky header above the main page vertical 
+recycler view. 
+
+

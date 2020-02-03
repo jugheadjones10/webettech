@@ -1,0 +1,87 @@
+---
+title: 3rd Feb - School
+date: 2020-02-03
+tags:
+  - School
+---
+
+ - Explain the Java memory model.
+ - Explain Java compilation and interpretation.
+ - What's the difference between encapsulation and abstraction?
+
+A benefit of making objects immutable is that they can be used in a sort of "testing" framework. No matter how many "test methods" are 
+applied to the object, it will come out the same at the end of the day. 
+
+For exaple, if we structure our Point.java file like so :
+
+```java
+public class Point {
+
+	private double x;
+	private double y;
+	
+	public Point(double x, double y) {
+		this.x = x;
+		this.y = y;
+	}
+	
+	public double getX() {
+		return this.x;
+	}
+	
+	public double getY() {
+		return this.y;
+	}
+	
+	public Point setX(double x) {
+		return new Point(x, this.y);
+	}
+	
+	public Point setY(double y) {
+		return new Point(this.x, y);
+	}
+}
+```
+In this case, if a series of setX and setY are executed on a point, then that same series of methods calls will always give back
+the same result when applied to the original point. One can envision how useful this might be in a testing context; I make one point
+called p, then perform a series of sets on it to "transform" it, then call a "testing" function on it to test something.
+
+I then want to change the conditions under which the testing function is called, so I pass in different values to
+setX and do not setY altogether. Since p is immutable, however, I do not need to make a new Point p class in order to 
+reset my y value - I can simply call setX on p, knowing that p has not changed state due to the previous state. 
+
+My testing will look like a series of one-liner method-chains that are **independent** of one another.
+
+"Bottom up testing" is recommended; start with zero-dependency classes and move up the ladder. But in order to do so,
+you need to structure your code to be hierarchical and not cyclical.
+
+Fascinating new concept of static "factory" methods. Calling a constructor will always return a new class. If we want
+to check for the validity of the arguments to a constructor before actually deciding whether to make a class or not,
+we can do the following :
+
+```java
+public class Point {
+
+	private double x;
+	private double y;
+	
+	private Point(double x, double y) {
+		this.x = x;
+		this.y = y;
+	}
+	
+	public static createPoint(double x, double y) {
+		if(x < 0 || y < 0) {
+			return null;
+		}else {
+			return new Point(x, y);
+		}
+	}
+}
+```
+
+Make the constructor private, then implement the createPoint factory method.
+
+
+
+
