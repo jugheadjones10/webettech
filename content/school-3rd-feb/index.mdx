@@ -70,10 +70,10 @@ public class Point {
 		this.y = y;
 	}
 	
-	public static createPoint(double x, double y) {
+	public static Point createPoint(double x, double y) {
 		if(x < 0 || y < 0) {
 			return null;
-		}else {
+		} else {
 			return new Point(x, y);
 		}
 	}
@@ -82,6 +82,97 @@ public class Point {
 
 Make the constructor private, then implement the createPoint factory method.
 
+## Inheritance
+Let's say I have a Circle class and a child UnitCircle class :
+
+```java
+
+public class Circle {
+	protected Point center;
+	protected double radius;
+
+	public Circle(Point center, double radius) {
+		this.center = center;
+		this.radius = radius;
+	}
+	
+	public static Circle getCircle(Point center, double radius) {
+		if(radius <= 0) {
+			return null;
+		}
+		Circle newCircle = new Circle(center, radius);
+		return newCircle;
+	}
+}
 
 
+public class UnitCircle extends Circle{
+	public UnitCircle(Point center) {
+		super.center = center;
+		super.radius = 1;
+	}
+}
+```
+
+In this case, UnitCircle does not compile because it is not passing any
+arguments into super() in its constructor.
+
+>There is an implicit call to super() with no arguments for 
+all classes that have a parent - which is 
+every user defined class in Java - so calling
+it explicitly is usually not required. However, 
+you may use the call to super() with arguments 
+if the parent's constructor takes parameters, and you wish to
+specify them. Moreover, if the parent's constructor takes parameters, 
+and it has no default parameter-less constructor, you will need
+to call super() with argument(s).
+
+So rather than manually getting the parent variables with super.center and
+super.radius, we can just use the conventional method :
+
+```java
+public class UnitCircle extends Circle{
+
+	public UnitCircle(Point center) {
+		super(center, 1);
+	}
+}
+```
+
+Something insanely cool : you can automatically generate javadoc
+documentation by inserting special comments into your java code.
+[Here's](https://www.comp.nus.edu.sg/~cs2030/javadoc/) a quick guide
+on the proper way to generate javadocs.
+
+The purpose of "annotators" have finally been made clear :
+if I add an "@Override" annotator above a method, an error will be called
+if that method does not override a method from its parent class.
+It basically acts as a checker to ensure that the method is doing
+what I intend it to be doing. 
+
+Below is the proper way to override the equals method (for the Point class)
+
+```java
+@Override
+	boolean equals(Object obj) {
+	if (this == obj) {
+		return true;
+	} else if (obj instanceof Point) {
+		Point p = (Point) obj;
+		return Math.abs(this.x - p.x) < 1E-15 &&
+		Math.abs(this.y - p.y) < 1E-15;
+	} else {
+		return false;
+	}
+}
+```
+
+You can avoid cyclic dependency by adding another more "intangible" class
+to solidify some sort of relationship between the two original classes.
+E.g : add the "Loan" class in order to prevent cyclic dependency between the 
+Student and Book class.
+
+
+	
+	
 
