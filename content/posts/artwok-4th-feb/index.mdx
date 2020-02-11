@@ -18,4 +18,44 @@ YouTube series.
 
 Finally figured out the proper difference between styles and themes and how to properly apply them from [here](https://developer.android.com/guide/topics/ui/look-and-feel/themes).
 
+Takeaways from the tutorial so far : for all your complaining about the need
+to always write too much boilerplate code, the solution was there all along.
+When making a new activity or whatever, look at the options in the
+dropdown list - some will help you generate your Activity java file with
+all the Override methods and also an xml file that matches your activity name.
+
+Also, in xml, android:inputType="textEmailAddress" is important. The user's keyboard
+will show his common emails when he starts typing in that EditText.
+
+Use "ProgressDialog" to programmatically create loading logic. 
+
+Tutorial showed me how to disable the back button when going
+back in undesirable, an example being when the user has logged in and shouldn't
+be able to press back to go to the login page :
+
+```java
+private void SendUserToMainActivity() {
+  Intent mainIntent = new Intent(RegisterActivity.this, MainActivity.class);
+  mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+  startActivity(mainIntent);
+  finish();
+}
+```
+
+[This](https://developer.android.com/guide/components/activities/tasks-and-back-stack) is the
+wonderful Android explanation of tasks and back stacks.
+
+New idea for code organization - for every activity or fragment,
+in the onCreate or onCreateView method, call a series of methods,
+and standardize the name of these methods across the app. Keep the
+sequence the same too. For example - setUpRecyclerView(), setUpViewModel(), etc.
+Standardize, standardize, standardize.
+
+Curious phenomenon - when I use the version of RecyclerView adapter
+that includes the DiffUtil "setList" method, screen updates come
+painfully slowly. Only by using the OG adapter pattern
+could I make chat messages appear immediately on the screen.
+
+
+
 
