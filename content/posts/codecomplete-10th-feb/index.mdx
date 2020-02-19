@@ -5,3 +5,24 @@ tags:
   - Book Summary
 ---
 
+Flipped through the first few chapter of "Code Complete", but the concrete examples took
+way too long to come. So I decided to switch over to "Head First : Design Patterns" first,
+just so I can dive straight in and start learning real concrete things.
+
+## Design Principle Number 1 :
+"Identify the aspects of your application that vary and separate them from what stays the
+same."
+
+The biggest example of this I see in my Artwok code is my repository. I abstracted away all
+database calls into the FirestoreRepo class, so that even if I decide to change
+database from firebase to, say, SQL, all I need to change will be the implementations
+in each of the database methods. As long as I make the methods do what they're supposed
+to do, I do not need to trawl the rest of the app changing database related code.
+
+>Take the parts that vary and
+encapsulate them, so that later you can alter or extend the parts that vary
+without affecting those that don’t.
+
+
+
+

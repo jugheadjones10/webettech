@@ -14,3 +14,93 @@ Myanmar app that I'd been talking about for literally years.
 confusing and downright anti-user process of setting up a 
 React project with Webpack and Babel. I hate them, I really do.
 I hate them so much. 
+
+Will be following [this](https://www.valentinog.com/blog/redux/) tutorial to 
+get my head around redux.
+
+Supposedly one of the most important rules in Redux is that state should be immutable.
+
+Actions are javascript objects with a type and a payload. The creation of these
+objects are usually "abstracted away" into functions. For example, a function called 
+updateProject takes in a payload and returns the action object.
+
+There are a few key methods you can call on Redux's store object. You can
+getState(), dispatch() an action, or subscribe() to execute a callback whenever
+an action is dispatched.
+
+In react-redux, there's something called connect, which can either connect
+the component to data from the Redux state or provide the component with
+the dispatch method so it can dispatch actions. 
+
+Middleware can intercept actions before they reach the reducer. 
+
+A very commonly used module for redux users is something called ["redux-thunk"](https://github.com/reduxjs/redux-thunk).
+Basically what it does it to check actions to see if they are functions - usually they
+are objects with the type and payload properties, but if I want to make an asynchronous
+call, I can make an action creator like so :
+
+```javascript
+function logOutUser() {
+  return function(dispatch, getState) {
+    return axios.post('/logout').then(function() {
+      // pretend we declared an action creator
+      // called 'userLoggedOut', and now we can dispatch it
+      dispatch(userLoggedOut());
+    });
+  };
+}
+```
+
+If the actions is indeed a function, redux thunk passes in dispatch and getState
+and calls it. [Here's](https://daveceddia.com/what-is-a-thunk/) a solid explanation.
+
+So i guess you could say redux thunks are "fake" actions.
+Real actions get passed into dispatch, but thunks simply get called,
+with a "real" action usually getting dispatched inside it after an
+important async call has completed.
+
+Redux saga works a bit differently - it listens for actions of a specific type, then
+dispatches a "real" action after calling an asynchronous function.
+
+Finally learnt about react routing [here](https://www.sitepoint.com/react-router-v4-complete-guide/).
+
+[Here's](https://dmitripavlutin.com/use-react-memo-wisely/) a cool application of a concept learnt in
+CS1101S, memoization, to React.
+
+Important note about Redux :
+>In Redux, whenever an action is called anywhere in the application, 
+all mounted & connected components call their mapStateToProps function. 
+This is why Reselect is awesome. It will just return the memoized result 
+if nothing has changed.
+
+[Here](https://blog.logrocket.com/a-guide-to-react-refs/) is a guide to the elusive ref
+keyword in React.
+
+And [this](https://medium.com/@rossbulat/react-using-refs-with-the-useref-hook-884ed25b5c29) here demystifies the useRef() 
+React hook.
+
+You can enable "strict" mode in React to receive updates about "structuring" problems in your
+code.
+
+[This](https://simonsmith.io/destructuring-objects-as-function-parameters-in-es6) cleared up
+some misunderstandings I held before about object destructuring in Javascript.
+
+[This](https://medium.com/@jan.hesters/usecallback-vs-usememo-c23ad1dc60) explains the
+subtle difference between useCallback and useMemo in React.
+
+[Here](https://daveceddia.com/useeffect-hook-examples/) is the best example of the 
+useEffect React hook. Passing in an empty array as the second argument isn't meaningless after all.
+
+Functions like put() and call() in redux-saga actually return plain old Javascript objects.
+
+Remember to try using ESLint on your code. Apparently it points out a lot of things you can
+improve on. 
+
+This project is kind of insane. Every single module has multiple dependencies on a dozen
+other modules, and those each have another dozen dependencies, and so on. I end
+up at the bottom of a long and winding rabbit hole with no clear end in sight.
+
+I probably should get some A4 paper and start sketching out the flow of the entire app, 
+describing what each modules does, and what gets passed on to dependency modules, etc. 
+
+
