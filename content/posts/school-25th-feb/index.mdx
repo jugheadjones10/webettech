@@ -1,0 +1,96 @@
+---
+title: 25th Feb - School
+date: 2020-02-25
+tags:
+  - School
+---
+
+## Interface as an Abstraction Barrier
+
+While looking into the Single Responsibility Principle and 
+Liskov's Substitution Principle, I came across a 40-page 
+summary of software architecture written by some CMU professors.
+Since the SOLID principles are a subset of the bigger domain of
+software engineering, I thought it wouldn't do any harm to peruse the paper.
+Here's a quick summary :
+
+The authors propose a framework with which to view the variety of
+software architecture styles out there : all architectures are essentially
+a collection of **components**, or nodes, with descriptions of the 
+interactions between these components - the **connectors**. These are
+combined with a set of **constraints** that limit how the components 
+and connectors can be mixed and matched. 
+
+## 1. Pipes and Filters
+
+>In a pipe and filter style each component has a set of inputs and a set of
+outputs. A component reads streams of data on its inputs and produces
+streams of data on its outputs, delivering a complete instance of the result in a
+standard order. This is usually accomplished by applying a local
+transformation to the input streams and computing incrementally so output
+begins before input is consumed. Hence components are termed “filters”. The
+connectors of this style serve as conduits for the streams, transmitting outputs
+of one filter to inputs of another. Hence the connectors are termed “pipes”.
+
+Some of the **constraints** on the pipe and filters style :
+filters must be independent of one another - they cannot share state, and
+each filter, although it can restrict what it receives as input
+and what it produces in the output pipe, cannot know which components
+are connected to its input and output pipes.
+
+## 2. Data Abstraction and Object-Oriented Organization
+
+This is the architecture most applicable to the CS2030S course.
+
+>Object-oriented systems have many nice properties, most of which are well
+known. Because an object hides its representation from its clients, it is possible
+to change the implementation without affecting those clients. Additionally,
+the bundling of a set of accessing routines with the data they manipulate
+allows designers to decompose problems into collections of interacting agents.
+
+>But object-oriented systems also have some disadvantages. The most
+significant is that in order for one object to interact with another (via
+procedure call) it must know the identity of that other object. This is in
+contrast, for example, to pipe and filter systems, where filters do need not
+know what other filters are in the system in order to interact with them. The
+significance of this is that whenever the identity of an object changes it is
+necessary to modify all other objects that explicitly invoke it. In a moduleoriented language this manifests itself as the need to change the “import” list
+of every module that uses the changed module. Further there can be sideeffect problems: if A uses object B and C also uses B, then C's effects on B look
+like unexpected side effects to A, and vice versa.
+
+## 3. Event-based, Implicit Invocation
+
+>The idea behind implicit invocation is that instead of invoking a
+procedure directly, a component can announce (or broadcast) one or more
+events. Other components in the system can register an interest in an event by
+associating a procedure with the event. When the event is announced the
+system itself invokes all of the procedures that have been registered for the
+event. Thus an event announcement "implicitly" causes the invocation of
+procedures in other modules.
+
+>Architecturally speaking, the components in an implicit invocation style
+are modules whose interfaces provide both a collection of procedures (as with
+abstract data types) and a set of events. Procedures may be called in the usual
+way. But in addition, a component can register some of its procedures with
+events of the system. This will cause these procedures to be invoked when
+those events are announced at run time. Thus the connectors in an implicit
+invocation system include traditional procedure call as well as bindings
+between event announcements and procedure calls.
+
+## 4. Repositories
+
+>In a repository style there are two quite distinct kinds of components: a central
+data structure represents the current state, and a collection of independent
+components operate on the central data store. Interactions between the
+repository and its external components can vary significantly between systems.
+
+Here is an example of a "heterogeneous" architecture :
+
+>Another example is an “active database”. This is a repository which
+activates external components through implicit invocation. In this
+organization external components register interest in portions of the database.
+The database automatically invokes the appropriate tools based on this
+association. (Blackboards are often constructed this way; knowledge sources are
+associated with specific kinds of data, and are activated whenever that kind of
+data is modified.)
+
