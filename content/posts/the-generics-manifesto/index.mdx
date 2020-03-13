@@ -1,0 +1,327 @@
+---
+title: The Generics Manifesto
+date: 2020-03-01
+tags:
+  - School
+---
+
+The point of this "manifesto" is to share some subtle insights and
+possibly confusing gotchas about Java generics. It is **not** an overview
+of general syntax and basic rules. 
+
+## 1. PECS
+The PECS principle, which stands for Producer-Extends-Consumer-Super,
+is a guideline to follow when using bounded wildcards.
+
+Consider the classes `Vehicle`, `Car`, `Bus`, and `Roomba`, where `Car` and `Bus`
+extends `Vehicle` and `Roomba` extends `Car`.
+
+```java
+List<? extends Vehicle> garage = new ArrayList<>();
+garage.add(new Vehicle());  // compilation error
+garage.add(new Car());      // compilation error
+garage.add(new Bus());      // compilation error
+garage.add(new Roomba());   // compilation error
+```
+
+The errors above seem at first to be uncalled for -
+`garage` is a List of "any objects that extend Vehicle" (including
+Vehicle itself), so it should be able to accept our Car, Bus,
+and Vehicle objects.
+
+What we're missing here is that `List<? extends Vehicle>`
+doesn't actually mean a list that can contain any child objects of Vehicle.
+`List<? extends Vehicle>` is in fact saying that it is a 
+"list parameterized to one concrete class that extends Vehicle".
+
+So `List<? extends Vehicle>` is one of `List<Car>`, `List<Truck>`, or `List<Roombar>`,
+but the compiler does not know which. And because the compiler does not know which,
+it does not allow the addition of, say, a Vehicle to `List<? extends Vehicle>` - what if the 
+unknown identity of `List<? extends Vehicle>` is `List<Car>`? It wouldn't make
+sense to add a Vehicle to a list of Cars. The same goes for adding a Car or Bus or Roomba
+to `List<? extends Vehicle>`.
+
+What if instead of trying to add to garage, we only want to get from it?
+```java
+List<Vehicle> vehicles = new ArrayList<>(new Car(), new Bus());
+List<? extends Vehicle> garage = vehicles;
+
+Vehicle vehicleOne = garage.get(0);
+Vehicle vehicleTwo = garage.get(1);
+```
+
+We find ourselves knowing intuitively what type to declare `vehicleOne` and `vehicleTwo` as.
+It is in this sense that people say `garage` is a "producer" of sorts - it produces values,
+and we consume from it, but we can never insert values into it.
+
+Applying this pattern into the context of a method would look something like this :
+
+```java
+List<Vehicle> factory = new ArrayList<>();
+public void addAllToFactory(List<? extends Vehicle> vehicles){
+    for(Vehicle oneVehicle : vehicles){
+        factory.add(oneVehicle);
+    }
+}
+
+List<Car> cars = new ArrayList<>();
+cars.add(new Car());
+addAllToFactory(cars); //works
+```
+
+The `cars` that we pass into `addAllToFactory` now takes on the role of a "producer",
+yielding the values inside it for the `factory` to "consume".
+
+A similar logic applies for Consumer-Super.
+
+```java
+List<? super Car> garage = new ArrayList<>();
+garage.add(new Roomba());     //runs
+garage.add(new Car());        //runs
+garage.add(new Vehicle());    // compilation error
+```
+
+The compiler knows that `garage`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 1. Type Inference
+
+Unlike in generic class instantiations, we may not always
+explicitly pass in type arguments to a generic method.
+
+Remember - generics are not covariant
+```java
+Box<Object> objectBoc = Box.of("Hey")
+String heyo = objectBoc.get()
+```
+Second line doesn't work
+
+```java
+ if(object instanceof Box<?>){     
+     The wildcard can be removed
+```
+
+The below seems illegal to do:
+```java 
+Box<String> stringBox = Box.of("string");
+Object objectified = stringBox;
+Box<Integer> integerBox = (Box<Integer>)objectified;
+
+String stringResult = integerBox.get();
+Integer integerResult = integerBox.get();
+Object objectResult = integerBox.get();
+```
+
+## Explanation of PECS
+
+
+
+## Why invariant?
+## 1. Why Generics
+## 2. Type Erasure
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Before diving into the syntax, a brief aside is warranted - why Generics?
+If you're familiar with Java you probably know you can survive without Generics by using the Object class.
+
+
+
+Here is a simple generic class :
+```java
+class Gen<T> {
+
+    T ob; 
+
+    Gen(T o) {
+        ob = o;
+    }
+
+    T getob() {
+        return ob;
+    }
+
+}
+```
+
+To instantiate this generic class, we do this : 
+```java
+Gen<String> genString = new Gen<String>("hey");
+Gen<String> genString = new Gen<>("hey");
+```
+Both the first line and the second line work (String is inferred
+in the second line).
+
+Now let's say I do the following :
+```java
+Gen<Number> number = new Gen<Number>(5);
+number = new Gen<Integer>(5);
+```
+This will throw an error. Unlike collections,
+generics are type invariant.
+
+EXPLAIN WHY GENERICS ARE INVARIANT HERE 
+
+I can also "bound" the type parameter(s) passed into
+a generic class - that is, limit the classes whose identities
+T can take on.
+```java
+class Gen<T extends Number> {
+
+    T ob; 
+
+    Gen(T o) {
+        ob = o;
+    }
+
+    T getob() {
+        return ob;
+    }
+
+}
+```
+Now Gen can only take in type parameters which are
+subtypes of Number.
+
+```java
+Gen<Integer> integer = new Gen<>(5);
+Gen<Object> integer = new Gen<>(5);
+```
+First line works, second line returns an error.
+
+Now let's look at this new version of Gen.
+```java
+class Gen<T> {
+
+    T ob; 
+
+    Gen(T o) {
+        ob = o;
+    }
+
+    T getob() {
+        return ob;
+    }
+
+    boolean genEquals(Gen<T> otherGen){
+		return otherGen.getob() == ob;
+	}
+
+}
+
+Gen<Number> numberBox = new Gen<>(5);
+Gen<Integer> integerBox = new Gen<>(5);
+
+numberBox.genEquals(integerBox);
+```
+Will the last line run? No. In my Gen class, 
+the equals method accepts an argument of type `Gen<T>`.
+The "T" here is substituted with Number when numberBox 
+is initialized, so otherGen can only  be of type
+`Gen<Number>`.
+
+That's also why the last line returns an error that goes :
+>incompatible types: Gen<java.lang.Integer> 
+cannot be converted to Gen<java.lang.Number>
+
+One solution is using wildcards :
+```java
+boolean genEquals(Gen<?> otherGen){
+    return otherGen.getob() == ob;
+}
+```
+You can also set upper and lower bounds to the wildcard :
+```java
+boolean genEquals(Gen<? extends Number> otherGen){
+    return otherGen.getob() == ob;
+}
+
+boolean genEquals(Gen<? super Number> otherGen){
+    return otherGen.getob() == ob;
+}
+```
+
+Making generic methods :
+```java
+class Gen<T> {
+
+    T ob; 
+
+    Gen(T o) {
+        ob = o;
+    }
+
+    T getob() {
+        return ob;
+    }
+
+    static <U> Gen<U> generateGen(U u){
+        return new Gen<>(u);
+    }
+
+}
+```
+The generateGen static method is a generic method.
+Type parameters are passed in first before return type is 
+specified. We can call the static method quite normally
+since U is inferred.
+```java
+Gen<String> generated = Gen.generateGen("Hey");
+```
+
+
+

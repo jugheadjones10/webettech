@@ -1,0 +1,164 @@
+---
+title: 27th Feb - School
+date: 2020-02-27
+tags:
+  - School
+---
+
+Consider the following classes:
+
+```java
+class FastFood{
+
+}
+
+class Burger extends FastFood {
+
+}
+
+class CheeseBurger extends Burger{
+
+}
+```
+
+Let's say we have a method that accepts an array of burgers:
+
+```java
+void foo(Burger[] burgers){
+
+}
+
+Burger[] burgers = new Burger[1];
+CheeseBurger[] cheeseBurgers = new CheeseBurger[1];
+```
+
+Both burgers and cheeseBurgers can be passed into foo - this makes 
+java arrays what is called "co-variant". 
+
+But what happens when I try to store a Burger object in the cheeseBurgers
+array? I get an error. It only works the other way round - storing
+a CheeseBurger in the burgers array.
+
+How about for generic classes?
+
+```java
+class Box<T> {
+
+    private final T t;
+
+    private Box(T t) {
+        this.t = t;
+    }
+
+    T get() {
+        return t;
+    }
+
+    static <T> Box<T> of(T t) {
+        return new Box<>(t);
+    }
+
+    @Override
+    public String toString() {
+        return "[" + t + "]";
+    }
+}
+```
+
+Let's do the same thing we did with the burger and cheese burger arrays:
+
+```java
+void foo(Box<Burger> box){
+
+}
+
+Box<Burger> burgerBox = Box.of(new Burger());
+Box<CheeseBurger> cheeseBurgerBox = Box.of(new CheeseBurger());
+```
+
+Like the burgers and cheeseBurgers arrays, will we be able to
+pass in both burgerBox and cheeseBurgerBox to foo?
+
+No, it turns out. We can 
+only pass in the burgerBox.
+That's because Java generics are **invariant**.
+One way around this is by using something called **wildcards**.
+
+```java
+void foo(Box<? extends Burger> box){
+
+}
+
+foo(burgerBox);
+foo(cheeseBurgerBox);
+```
+
+Now, the last two lines will not return an error. The question mark
+and extends keyword tells Java to accept any generic whose type extends
+that of Burger (and of course Burger itself).
+
+The upper-bounded wildcard makes generics **co-variant**.
+
+Here's a possible gotcha:
+
+```java
+Burger getBurger(Box<? extends Burger> box) { 
+    return box.get(); 
+}
+
+CheeseBurger cheeseBurger = getBurger(Box.of(new CheeseBurger()));
+```
+
+Is the last statement legal? No. The return type of 
+getBurger is Burger, so the run-time type of the cheeseburger in the box
+will be cast to Burger when being returned. 
+
+Since an upper-bounded wildcard exists, there of course exists
+the lower-bounded wildcard.
+
+Consider this modified box:
+
+```java
+class Box<T> {
+
+    private final T t;
+
+    private Box(T t) {
+        this.t = t;
+    }
+
+    T get() {
+        return t;
+    }
+
+
+    private boolean isEmpty() {
+        return this.t == null;
+    }
+
+    static <T> Box<T> empty() {
+        return new Box<>(null);
+    }
+
+    Box<T> add(T t) {
+        return isEmpty() ? new Box<>(t) : this;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + (isEmpty() ? "empty" : t) + "]";
+    }
+}
+
+Box<Burger> putBurger(Box<Burger> box) {
+    return box.add(new Burger());
+}
+
+Box<Burger> emptyBox = Box.empty();
+Box<Burger> fullBox = putBurger(emptyBox);
+
+Box<FastFood> emptyBox = Box.empty();
+Box<FastFood> fullBox = putBurger(emptyBox);
+
+
+```
