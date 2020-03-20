@@ -1,106 +1,12 @@
 ---
-title: The Generics Manifesto
+title: The Generics Manifesto Series Part 2 - Type Inference
 date: 2020-03-01
 tags:
   - School
 ---
 
-The point of this "manifesto" is to share some subtle insights and
-possibly confusing gotchas about Java generics. It is **not** an overview
-of general syntax and basic rules. 
+## 2. Type Inference
 
-## 1. PECS
-The PECS principle, which stands for Producer-Extends-Consumer-Super,
-is a guideline to follow when using bounded wildcards.
-
-Consider the classes `Vehicle`, `Car`, `Bus`, and `Roomba`, where `Car` and `Bus`
-extends `Vehicle` and `Roomba` extends `Car`.
-
-```java
-List<? extends Vehicle> garage = new ArrayList<>();
-garage.add(new Vehicle());  // compilation error
-garage.add(new Car());      // compilation error
-garage.add(new Bus());      // compilation error
-garage.add(new Roomba());   // compilation error
-```
-
-The errors above seem at first to be uncalled for -
-`garage` is a List of "any objects that extend Vehicle" (including
-Vehicle itself), so it should be able to accept our Car, Bus,
-and Vehicle objects.
-
-What we're missing here is that `List<? extends Vehicle>`
-doesn't actually mean a list that can contain any child objects of Vehicle.
-`List<? extends Vehicle>` is in fact saying that it is a 
-"list parameterized to one concrete class that extends Vehicle".
-
-So `List<? extends Vehicle>` is one of `List<Car>`, `List<Truck>`, or `List<Roombar>`,
-but the compiler does not know which. And because the compiler does not know which,
-it does not allow the addition of, say, a Vehicle to `List<? extends Vehicle>` - what if the 
-unknown identity of `List<? extends Vehicle>` is `List<Car>`? It wouldn't make
-sense to add a Vehicle to a list of Cars. The same goes for adding a Car or Bus or Roomba
-to `List<? extends Vehicle>`.
-
-What if instead of trying to add to garage, we only want to get from it?
-```java
-List<Vehicle> vehicles = new ArrayList<>(new Car(), new Bus());
-List<? extends Vehicle> garage = vehicles;
-
-Vehicle vehicleOne = garage.get(0);
-Vehicle vehicleTwo = garage.get(1);
-```
-
-We find ourselves knowing intuitively what type to declare `vehicleOne` and `vehicleTwo` as.
-It is in this sense that people say `garage` is a "producer" of sorts - it produces values,
-and we consume from it, but we can never insert values into it.
-
-Applying this pattern into the context of a method would look something like this :
-
-```java
-List<Vehicle> factory = new ArrayList<>();
-public void addAllToFactory(List<? extends Vehicle> vehicles){
-    for(Vehicle oneVehicle : vehicles){
-        factory.add(oneVehicle);
-    }
-}
-
-List<Car> cars = new ArrayList<>();
-cars.add(new Car());
-addAllToFactory(cars); //works
-```
-
-The `cars` that we pass into `addAllToFactory` now takes on the role of a "producer",
-yielding the values inside it for the `factory` to "consume".
-
-A similar logic applies for Consumer-Super.
-
-```java
-List<? super Car> garage = new ArrayList<>();
-garage.add(new Roomba());     //runs
-garage.add(new Car());        //runs
-garage.add(new Vehicle());    // compilation error
-```
-
-The compiler knows that `garage`
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## 1. Type Inference
 
 Unlike in generic class instantiations, we may not always
 explicitly pass in type arguments to a generic method.
@@ -127,8 +33,6 @@ String stringResult = integerBox.get();
 Integer integerResult = integerBox.get();
 Object objectResult = integerBox.get();
 ```
-
-## Explanation of PECS
 
 
 
